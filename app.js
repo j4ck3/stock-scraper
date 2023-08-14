@@ -1,0 +1,85 @@
+require('dotenv').config();
+const PORT = process.env.PORT;
+const gmail_auth_password = process.env.gmail_auth_password
+const gmail_auth_email = process.env.gmail_auth_email;
+const express = require('express');
+const axios = require('axios');
+const cheerio = require('cheerio');
+const nodemailer = require('nodemailer');
+const schedule = require("node-schedule");
+
+const app = express();
+
+const url = 'https://www.maxgaming.se/sv/gaming-tangentbord/q1-qmk-barebone-spacy-grey'
+
+const sendInStockEmailAsync = async () => {
+    const parsedUrl = new URL(url);
+    const pathnameParts = parsedUrl.pathname.split('/');
+    const desiredValue = pathnameParts[pathnameParts.length - 1].replaceAll('-', ' ');
+
+    const html =  `
+        <h2>NU FINNS ${desiredValue} TILLGÄNGLIG</h2>
+        <a href=${url}>KLICKA HÄR FÖR ATT KOMMA TILL KÖPSIDAN.</a>
+    `
+
+    try {
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: gmail_auth_email,
+                pass: gmail_auth_password,
+            },
+        });
+
+        const info = await transporter.sendMail({
+            from: `StockScraper <${gmail_auth_email}>`,
+            to: gmail_auth_email,
+            subject: `${desiredValue} FINNS NU TILLGÄNGLIG`,
+            html: html,
+        })
+
+        console.log('Email sent successfully ' + info.messageId)
+
+
+    }catch (err) {
+        console.error('Failed to send the mail:', err);
+    }
+}
+
+const checkIfInStockAsync = async () => {
+    try {
+        const response = await axios.get(url);
+        const $ = cheerio.load(response.data);
+
+        const StockStatusText = $('.Text_Lagerstatus').text().toLocaleLowerCase().trim();
+
+        if (StockStatusText == 'i lager'){
+            await sendInStockEmailAsync()
+            return true
+        }
+        else
+            return false
+    }
+    catch (err){
+        console.error('Failed to send the mail:', err);
+        //send email that something failed and the cron scheduler stopped.
+        return true
+    }
+}
+
+
+try {
+    const job = schedule.scheduleJob('*/4 * * * *', async () => {
+        const res = await checkIfInStockAsync();
+
+        if (res) {
+            job.cancel();
+        }
+    });
+} catch (err) {
+    console.error('Failed to schedule job:', err);
+}
+
+app.listen(PORT, () => {
+    console.log(`Listening on ${PORT}`);
+});
