@@ -17,7 +17,7 @@ const sendInStockEmailAsync = async () => {
     const pathnameParts = parsedUrl.pathname.split('/');
     const desiredValue = pathnameParts[pathnameParts.length - 1].replaceAll('-', ' ');
 
-    const html =  `
+    const html = `
         <h2>NU FINNS ${desiredValue} TILLGÄNGLIG</h2>
         <a href=${url}>KLICKA HÄR FÖR ATT KOMMA TILL KÖPSIDAN.</a>
     `
@@ -41,35 +41,38 @@ const sendInStockEmailAsync = async () => {
         console.log('Email sent successfully ' + info.messageId)
 
 
-    }catch (err) {
+    } catch (err) {
         console.error('Failed to send the mail:', err);
     }
 }
 
 const checkIfInStockAsync = async () => {
     try {
-        const response = await axios.get(url);
-        const $ = cheerio.load(response.data);
+        const response = await axios.get(url, {
+            headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36' }
+        })
 
+        const $ = cheerio.load(response.data);
         const StockStatusText = $('.Text_Lagerstatus').text().toLocaleLowerCase().trim();
 
-        if (StockStatusText == 'i lager'){
+        if (StockStatusText == 'i lager') {
             await sendInStockEmailAsync()
             return true
         }
-        else
+        else {
+            console.count('not in stock')
             return false
+        }
     }
-    catch (err){
+    catch (err) {
         console.error('Failed to send the mail:', err);
-        //send email that something failed and the cron scheduler stopped.
         return true
     }
 }
 
 
 try {
-    const job = schedule.scheduleJob('*/4 * * * *', async () => {
+    const job = schedule.scheduleJob('*/20 * * * *', async () => {
         const res = await checkIfInStockAsync();
 
         if (res) {
