@@ -9,13 +9,11 @@ const check = async (url) => {
         const response = await axios.get(url);
         const $ = cheerio.load(response.data);
 
-
         const StockStatusText = $('.Text_Lagerstatus').text().toLocaleLowerCase().trim();
         const title = $('#ArtikelnamnFalt').text();
         const priceDiscount = $('.PrisREA').text().replace('kr', '').trim();
         const priceOrg = $('.PrisORD').text().replace('kr', '').trim();
         const image = $('#Zoomer').attr('href');
-
 
         product.title = title
         product.price = priceDiscount !== null && priceDiscount !== undefined ? priceDiscount : priceOrg;
@@ -25,7 +23,6 @@ const check = async (url) => {
 
         if (StockStatusText == 'i lager') 
             await sendEmail(product)
-        
         return product
     }
     catch (err) {
