@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const check = require('../services/scrapeService');
+const check = require('../services/main/scrapeService');
 
 router.get('/check', async (req, res) => {
     try {

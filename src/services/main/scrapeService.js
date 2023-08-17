@@ -1,7 +1,7 @@
 const axios = require('axios');
 const cheerio = require('cheerio');
 
-const sendEmail = require('../services/emailService')
+const sendEmail = require('../main/emailService')
 
 const check = async (url) => {
     try {
@@ -29,6 +29,6 @@ const check = async (url) => {
         console.error('Failed to scrape the product:', err);
         return null
     }
-}
+};
 
 module.exports = check;
