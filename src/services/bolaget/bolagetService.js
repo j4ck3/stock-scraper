@@ -1,10 +1,11 @@
+'use client'
 const puppeteer = require('puppeteer-extra');
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 puppeteer.use(StealthPlugin())
 const { executablePath } = require('puppeteer')
 
 const getDrink = async (url, area) => {
-
+    console.log('running the scraping')
     const browser = await puppeteer.launch({headless: false, executablePath: executablePath()})
     const page = await browser.newPage()
 
@@ -72,6 +73,8 @@ const getDrink = async (url, area) => {
   });
     return data;
 });
+
+browser.close()
 
 
 if (area) {

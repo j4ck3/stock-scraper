@@ -8,7 +8,6 @@ const check = async (url) => {
         const product = { title: '', stock: '', image: '', price: '', url: url }
         const response = await axios.get(url);
         const $ = cheerio.load(response.data);
-
         const StockStatusText = $('.Text_Lagerstatus').text().toLocaleLowerCase().trim();
         const title = $('#ArtikelnamnFalt').text();
         const priceDiscount = $('.PrisREA').text().replace('kr', '').trim();
@@ -19,7 +18,7 @@ const check = async (url) => {
         product.price = priceDiscount !== null && priceDiscount !== undefined ? priceDiscount : priceOrg;
         product.stock = StockStatusText
         product.image = `https://www.maxgaming.se${image}`
-
+        console.log(product)
 
         if (StockStatusText == 'i lager') 
             await sendEmail(product)

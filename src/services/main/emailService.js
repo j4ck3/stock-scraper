@@ -3,14 +3,14 @@ const gmail_auth_password = process.env.gmail_auth_password
 const gmail_auth_email = process.env.gmail_auth_email;
 
 
-const sendEmail = async () => {
-    const parsedUrl = new URL(url);
+const sendEmail = async (product) => {
+    const parsedUrl = new URL(product.url);
     const pathnameParts = parsedUrl.pathname.split('/');
     const desiredValue = pathnameParts[pathnameParts.length - 1].replaceAll('-', ' ');
 
     const html = `
         <h2>NU FINNS ${desiredValue} TILLGÄNGLIG</h2>
-        <a href=${url}>KLICKA HÄR FÖR ATT KOMMA TILL KÖPSIDAN.</a>
+        <a href=${product.url}>KLICKA HÄR FÖR ATT KOMMA TILL KÖPSIDAN.</a>
     `
 
     try {
