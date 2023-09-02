@@ -3,6 +3,7 @@ const PORT = process.env.PORT;
 const schedule = require("node-schedule");
 const check = require('./services/main/scrapeService')
 const getDrink = require('./services/bolaget/bolagetService')
+const getAllCities = require('./services/bolaget/bolagetGetAllCitiesService')
 const express = require('express');
 const app = express();
 app.use(express.json());
@@ -12,7 +13,7 @@ app.use('/api', mainController);
 app.use('/api/bolaget', bolagetController);
 
 const url = 'https://www.maxgaming.se/sv/gaming-tangentbord/q1-qmk-barebone-spacy-grey'
-
+//getAllCities('https://www.systembolaget.se/produkt/ol/ey-bro-143215')
 // try {
 //     const job = schedule.scheduleJob('*/5 * * * * *', async () => {
 //         const product = await check(url);
