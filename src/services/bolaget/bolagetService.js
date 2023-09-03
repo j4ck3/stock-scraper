@@ -38,9 +38,11 @@ const getDrink = async (url, area) => {
     await page.select('select', valueToSelect);
     } else {
       console.log('Select element not found');
+      browser.close()
     }
   } else {
     console.log('Button not found');
+    browser.close()
     return
   }
 
@@ -82,11 +84,7 @@ if (area) {
   console.log(storesData)
   return storesData
 }
-
 };
-
-
-
 
 module.exports = getDrink;
 
