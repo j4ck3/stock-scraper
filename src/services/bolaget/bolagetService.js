@@ -4,7 +4,6 @@ puppeteer.use(StealthPlugin())
 const { executablePath } = require('puppeteer')
 
 const getDrink = async (url, area) => {
-    console.log('running the scraping')
     const browser = await puppeteer.launch({headless: false, executablePath: executablePath()})
     const page = await browser.newPage()
 
