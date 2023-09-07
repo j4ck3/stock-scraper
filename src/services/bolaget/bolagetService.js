@@ -4,7 +4,7 @@ puppeteer.use(StealthPlugin())
 const { executablePath } = require('puppeteer')
 
 const getDrink = async (url, area) => {
-    const browser = await puppeteer.launch({headless: false, executablePath: executablePath()})
+    const browser = await puppeteer.launch({headless: "new", executablePath: executablePath()})
     const page = await browser.newPage()
 
     //set age consent cookie
@@ -19,7 +19,7 @@ const getDrink = async (url, area) => {
       waitUntil: 'domcontentloaded',
     })
 
-    //find the show stored button an click it!
+    //find the show stored button an click it
     const button = await page.$('.css-103vv0f');
 
   if (button) {
@@ -46,7 +46,7 @@ const getDrink = async (url, area) => {
     return
   }
 
-//Wait for stores then map store content
+//Wait for stores then return stores
 
   await page.waitForSelector('.css-4od5c4');
 
@@ -76,7 +76,7 @@ const getDrink = async (url, area) => {
 
 browser.close()
 
-
+//filter stores on area
 if (area) {
     const filteredStoresData = storesData.filter(store => store.city === area.toLocaleLowerCase());
     return filteredStoresData
@@ -87,4 +87,3 @@ if (area) {
 };
 
 module.exports = getDrink;
-
