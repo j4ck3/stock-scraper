@@ -49,14 +49,15 @@ const getDrink = async (url, area) => {
     return;
   }
 
-  //array from all the stores
+  // get the price and stocks of all the stores
   await page.waitForSelector('.css-4od5c4');
+  await page.waitForSelector('.css-6dcbqr');
 
   try {
-    const storesData = await page.evaluate(async () => {
+    const result = await page.evaluate(async () => {
       const stores = Array.from(document.querySelectorAll('.css-4od5c4'));
 
-      return stores.map((e) => {
+      const storesData = stores.map((e) => {
         const paragraphs = [...e.querySelectorAll('p')].map((e) =>
           e.textContent.trim()
         );
@@ -66,16 +67,25 @@ const getDrink = async (url, area) => {
           amount: paragraphs[3] || 'no amount',
         };
       });
+      //then get the price
+      const priceElements = document.getElementsByClassName('css-6dcbqr');
+      const price = priceElements[0].innerText;
+
+      return {
+        price: price,
+        stores: storesData,
+      };
     });
+
     //filter stores on area
     if (area) {
-      const filteredStoresData = storesData.filter(
+      const filteredStoresData = result.stores.filter(
         (store) => store.city === area.toLocaleLowerCase()
       );
       console.log(filteredStoresData);
       return filteredStoresData;
     } else {
-      return storesData;
+      return result;
     }
   } catch (e) {
     console.error(e, 'could not get store data');
