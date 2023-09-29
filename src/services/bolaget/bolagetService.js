@@ -82,8 +82,10 @@ const getDrink = async (url, area) => {
       const filteredStoresData = result.stores.filter(
         (store) => store.city === area.toLocaleLowerCase()
       );
-      console.log(filteredStoresData);
-      return filteredStoresData;
+      return{
+        price: result.price,
+        stores: filteredStoresData,
+      } 
     } else {
       return result;
     }

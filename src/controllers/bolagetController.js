@@ -4,10 +4,10 @@ const getStores = require('../services/bolaget/bolagetService');
 
 router.get('/getstores', async (req, res) => {
     try {
-        const storesList = await getStores(req.query.target, req.query.area);
+        const data = await getStores(req.query.target, req.query.area);
 
-        if (storesList) 
-            res.status(200).json({ storesList });
+        if (data) 
+            res.status(200).json({ data });
         else {
             res.status(404).json({ message: 'Could not get the stores.' });
         }
