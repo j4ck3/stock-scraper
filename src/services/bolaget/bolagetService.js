@@ -22,37 +22,38 @@ const getDrink = async (url, area) => {
     waitUntil: 'domcontentloaded',
   });
 
-  //find the show stores button an click it
-  const button = await page.waitForSelector('.css-103vv0f');
-
-  if (button) {
-    await button.click();
-
-    // Listen for dialog event and dissmiss it.
-    page.on('dialog', async (dialog) => {
-      await dialog.dismiss();
-    });
-
-    //Select hela sverige on the <select> element
-    const selectElement = await page.$('.css-dz8wl');
-    if (selectElement) {
-      const valueToSelect = 'sweden';
-      await page.select('select', valueToSelect);
-    } else {
-      console.log('Select element not found');
-      browser.close();
-      return;
-    }
-  } else {
-    console.log('Button not found');
+  //find & click the available stores button
+  try {
+    const button = await page.waitForSelector('.css-1s8bl0y');
+    button.click();
+  } catch {
+    console.error(`available stores button not found`);
     browser.close();
     return;
   }
 
-  // get the price and stocks of all the stores
-  await page.waitForSelector('.css-4od5c4');
-  await page.waitForSelector('.css-6dcbqr');
+  // Listen for share my location dialog event & dismiss it.
+  page.on('dialog', async (dialog) => {
+    await dialog.dismiss();
+  });
 
+  try {
+    await page.waitForSelector('.css-dz8wl');
+    await page.select('select', 'sweden');
+  } catch {
+    console.log('Select element not found');
+    browser.close();
+    return;
+  }
+
+  try {
+    await page.waitForSelector('.css-4od5c4');
+    await page.waitForSelector('.css-6dcbqr');
+  } catch (e) {
+    console.error('could not find selectors for stores');
+  }
+
+  // get the price and stocks of all the stores
   try {
     const result = await page.evaluate(async () => {
       const stores = Array.from(document.querySelectorAll('.css-4od5c4'));
@@ -82,10 +83,10 @@ const getDrink = async (url, area) => {
       const filteredStoresData = result.stores.filter(
         (store) => store.city === area.toLocaleLowerCase()
       );
-      return{
+      return {
         price: result.price,
         stores: filteredStoresData,
-      } 
+      };
     } else {
       return result;
     }
