@@ -24,7 +24,7 @@ const getDrink = async (url, area) => {
 
   //find & click the available stores button
   try {
-    const button = await page.waitForSelector('.css-1s8bl0y');
+    const button = await page.waitForSelector('.css-ae03gy');
     button.click();
   } catch {
     console.error(`available stores button not found`);
