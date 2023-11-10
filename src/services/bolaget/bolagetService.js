@@ -10,7 +10,7 @@ const getDrink = async (url, area) => {
   });
   const page = await browser.newPage();
 
-  //set age consent cookie
+  // set age consent cookie
   const decodedValue = '{"state":{"verified":true},"version":0}';
   await page.setCookie({
     name: 'systembolaget.age',
@@ -24,7 +24,7 @@ const getDrink = async (url, area) => {
 
   //find & click the available stores button
   try {
-    const button = await page.waitForSelector('.css-ae03gy');
+    const button = await page.waitForSelector('.css-qj2vkn');
     button.click();
   } catch {
     console.error(`available stores button not found`);
@@ -38,7 +38,7 @@ const getDrink = async (url, area) => {
   });
 
   try {
-    await page.waitForSelector('.css-dz8wl');
+    await page.waitForSelector('.css-1mcoogq');
     await page.select('select', 'sweden');
   } catch {
     console.log('Select element not found');
@@ -48,7 +48,7 @@ const getDrink = async (url, area) => {
 
   try {
     await page.waitForSelector('.css-4od5c4');
-    await page.waitForSelector('.css-6dcbqr');
+    await page.waitForSelector('.css-1df247k');
   } catch (e) {
     console.error('could not find selectors for stores');
   }
@@ -69,11 +69,14 @@ const getDrink = async (url, area) => {
         };
       });
       //then get the price
-      const priceElements = document.getElementsByClassName('css-6dcbqr');
-      const price = priceElements[0].innerText;
+
+      const elements = document.getElementsByClassName('css-1df247k');
+      const pp = elements[0].innerText;
+
+
 
       return {
-        price: price,
+        price: pp,
         stores: storesData,
       };
     });
