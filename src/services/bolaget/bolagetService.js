@@ -5,16 +5,22 @@ const { executablePath } = require('puppeteer');
 
 const getDrink = async (url, area) => {
   const browser = await puppeteer.launch({
-    headless: 'false',
+    headless: false,
     executablePath: executablePath(),
   });
   const page = await browser.newPage();
 
-  // set age consent cookie
-  const decodedValue = '{"state":{"verified":true},"version":0}';
+  // set age + cookies consent cookie
+  const ageCookieValue = '{"state":{"verified":true},"version":0}';
   await page.setCookie({
     name: 'systembolaget.age',
-    value: decodedValue,
+    value: ageCookieValue,
+    domain: '.systembolaget.se',
+  });
+  const consentCookieValue = '{"state":{"consentTypes":["useful","profiling","mandatory","statistical"]},"version":0}';
+  await page.setCookie({
+    name: 'systembolaget.consent',
+    value: consentCookieValue,
     domain: '.systembolaget.se',
   });
 
@@ -24,7 +30,7 @@ const getDrink = async (url, area) => {
 
   //find & click the available stores button
   try {
-    const button = await page.waitForSelector('.css-qj2vkn');
+    const button = await page.waitForSelector('.css-11pwr62');
     button.click();
   } catch {
     console.error(`available stores button not found`);
@@ -32,69 +38,54 @@ const getDrink = async (url, area) => {
     return;
   }
 
-  // Listen for share my location dialog event & dismiss it.
-  page.on('dialog', async (dialog) => {
-    await dialog.dismiss();
-  });
-
   try {
-    await page.waitForSelector('.css-1mcoogq');
-    await page.select('select', 'sweden');
-  } catch {
-    console.log('Select element not found');
-    browser.close();
-    return;
-  }
-
-  try {
-    await page.waitForSelector('.css-4od5c4');
-    await page.waitForSelector('.css-1df247k');
+    await page.waitForSelector('.css-uxm6qc');
+    await page.waitForSelector('.css-1yyr77e');
   } catch (e) {
     console.error('could not find selectors for stores');
+    browser.close();
   }
 
   // get the price and stocks of all the stores
   try {
-    const result = await page.evaluate(async () => {
-      const stores = Array.from(document.querySelectorAll('.css-4od5c4'));
-
-      const storesData = stores.map((e) => {
-        const paragraphs = [...e.querySelectorAll('p')].map((e) =>
-          e.textContent.trim()
-        );
-        return {
-          address: paragraphs[0] || 'no address',
-          city: paragraphs[1] ? paragraphs[1].toLowerCase().trim() : 'no city',
-          amount: paragraphs[3] || 'no amount',
+    const result = await page.evaluate(() => {
+        const buttons = Array.from(document.querySelectorAll('button.css-1yyr77e'));
+        const processData = (button) => {
+          const paragraphs = Array.from(button.querySelectorAll('p'));
+          return {
+            address: paragraphs[2].textContent.toLowerCase().trim() || 'no address',
+            city: paragraphs[0].textContent.toLowerCase().trim() || 'no city',
+            amount: paragraphs[1].textContent.trim() || 'no amount',
+          };
         };
-      });
-      //then get the price
+        const data = buttons.map(processData);
 
-      const elements = document.getElementsByClassName('css-1df247k');
-      const pp = elements[0].innerText;
+        //then get the price
+        const elements = document.getElementsByClassName('css-1ss6sno');
+        const price = elements[0].innerText;
 
-
-
-      return {
-        price: pp,
-        stores: storesData,
-      };
+        return {
+          price: price,
+          stores: data,
+        };
     });
 
     //filter stores on area
-    if (area) {
-      const filteredStoresData = result.stores.filter(
-        (store) => store.city === area.toLocaleLowerCase()
-      );
+    if (result) {
+      const filteredStores = result.stores.filter((store) => {
+        const addressParts = store.address.split(',');
+        return addressParts.length === 2 && addressParts[1].trim().toLowerCase() === area.toLowerCase();
+      });
       return {
         price: result.price,
-        stores: filteredStoresData,
+        stores: filteredStores,
       };
-    } else {
-      return result;
-    }
+  }
+  else {
+    console.error('result is null');
+  }
   } catch (e) {
-    console.error(e, 'could not get store data');
+    console.error(e.message, 'could not get store data');
   } finally {
     browser.close();
   }
