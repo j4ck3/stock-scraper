@@ -4,16 +4,18 @@
 //const check = require('./services/main/scrapeService')
 //const getDrink = require('./services/bolaget/bolagetService')
 //const getAllCities = require('./services/bolaget/bolagetGetAllCitiesService')
-const express = require('express');
+const getProductsFromSearch = require("./services/m/mService");
+const express = require("express");
 const app = express();
 app.use(express.json());
-const mainController = require('./controllers/mainController');
-const bolagetController = require('./controllers/bolagetController');
-app.use('/api', mainController);
-app.use('/api/bolaget', bolagetController);
+const mainController = require("./controllers/mainController");
+const bolagetController = require("./controllers/bolagetController");
+const mController = require("./controllers/mController");
+app.use("/api", mainController);
+app.use("/api/bolaget", bolagetController);
+app.use("/api/m", mController);
 
-//getAllCities('https://www.systembolaget.se/produkt/ol/ey-bro-143215')
-
+//getProductsFromSearch('https://www.matsmart.se/search?q=nocco')
 
 // try {
 //     const job = schedule.scheduleJob('*/5 * * * * *', async () => {
@@ -31,8 +33,7 @@ app.use('/api/bolaget', bolagetController);
 //     console.error('Failed to execute job:', err);
 // }
 
-
-const PORT = 5000
+const PORT = 5000;
 app.listen(PORT, () => {
-    console.log(`Listening on ${PORT}`);
+  console.log(`Listening on ${PORT}`);
 });
