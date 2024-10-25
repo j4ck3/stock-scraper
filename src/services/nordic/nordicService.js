@@ -2,7 +2,7 @@ const puppeteer = require('puppeteer')
 require('dotenv').config()
 
 const getTriggiz = async () => {
-	const browser = await puppeteer.launch({ headless: true })
+	const browser = await puppeteer.launch({ headless: "new" })
 	const page = await browser.newPage()
 
 	try {
