@@ -25,16 +25,16 @@ const sendTelegramNotification = async (message, p0) => {
 }
 
 try {
-  //every 30 minutes during the hours of 13:00 to 20:00, every day of the week.
-	const job = schedule.scheduleJob('*/30 13-20 * * *', async () => {
+	//every 30 minutes during the hours of 13:00 to 20:00, every day of the week.
+	const job = schedule.scheduleJob('0 18 * * *', async () => {
 		const result = await getTriggizService()
-
+		console.log(result)
 		const message = `${result.maxValue} triggz och kan hämta ut en ....`
 		const notifyPattern = /^(5|[6-9]|[1-9]\d+)?0{3}0$/
 		if (notifyPattern.test(result.maxValue.toString())) {
 			await sendTelegramNotification(message, { parse_mode: 'Html' })
 		}
-    
+
 		//await sendTelegramNotification(message, { parse_mode: 'Html' })
 	})
 } catch (err) {
