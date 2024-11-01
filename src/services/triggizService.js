@@ -2,12 +2,19 @@ const puppeteer = require('puppeteer')
 require('dotenv').config()
 
 const getTriggiz = async () => {
-	const browser = await puppeteer.launch({ headless: "new" })
+	const isProduction = process.env.NODE_ENV === 'production'
+
+	const browser = await puppeteer.launch({
+		headless: isProduction ? 'new' : false,
+		executablePath: isProduction ? '/usr/bin/chromium-browser' : undefined,
+		// userDataDir: isProduction ? '/home/bolaget-puppeteer/' : undefined,
+		args: isProduction ? ['--no-sandbox'] : [],
+	})
 	const page = await browser.newPage()
 
 	try {
 		await page.goto(process.env.LOGIN_URL, {
-			waitUntil: 'networkidle2' // Wait until all network requests are finished
+			waitUntil: 'networkidle2',
 		})
 
 		const email = process.env.NORDIC_WELLNESS_LOGIN_EMAIL
@@ -24,24 +31,24 @@ const getTriggiz = async () => {
 
 		await Promise.all([
 			page.$eval('button[type="submit"]', (form) => form.click()),
-			page.waitForNavigation({ waitUntil: 'networkidle2' })
+			page.waitForNavigation({ waitUntil: 'networkidle2' }),
 		])
 
-		const maxValue = await page.$eval(
+		const triggiz = await page.$eval(
 			'.independent-section .content-wrapper .drop-chart .drops-text',
 			(el) => el.textContent
 		)
-		const minValue = await page.$eval(
+		const milestone = await page.$eval(
 			'.independent-section .content-wrapper .drop-chart .sub-text',
 			(el) => el.textContent
 		)
 
-		return { minValue, maxValue } // Return values here
+		return { triggiz, milestone }
 	} catch (error) {
 		console.error('Error during login with Puppeteer:', error)
-		return { minValue: null, maxValue: null } // Return null values if there's an error
+		return { minValue: null, maxValue: null }
 	} finally {
-		await browser.close() // Ensure the browser closes in all scenarios
+		await browser.close()
 	}
 }
 

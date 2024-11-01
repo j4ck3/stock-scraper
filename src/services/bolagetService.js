@@ -6,7 +6,7 @@ const { executablePath } = require('puppeteer')
 const getDrink = async (url, area) => {
 	const browser = await puppeteer.launch({
 		headless: false,
-		executablePath: executablePath()
+		executablePath: executablePath(),
 	})
 	const page = await browser.newPage()
 
@@ -15,18 +15,18 @@ const getDrink = async (url, area) => {
 	await page.setCookie({
 		name: 'systembolaget.age',
 		value: ageCookieValue,
-		domain: '.systembolaget.se'
+		domain: '.systembolaget.se',
 	})
 	const consentCookieValue =
 		'{"state":{"consentTypes":["useful","profiling","mandatory","statistical"]},"version":0}'
 	await page.setCookie({
 		name: 'systembolaget.consent',
 		value: consentCookieValue,
-		domain: '.systembolaget.se'
+		domain: '.systembolaget.se',
 	})
 
 	await page.goto(url, {
-		waitUntil: 'domcontentloaded'
+		waitUntil: 'domcontentloaded',
 	})
 
 	//find & click the available stores button
@@ -61,7 +61,7 @@ const getDrink = async (url, area) => {
 						'no address',
 					city:
 						paragraphs[0].textContent.toLowerCase().trim() || 'no city',
-					amount: paragraphs[1].textContent.trim() || 'no amount'
+					amount: paragraphs[1].textContent.trim() || 'no amount',
 				}
 			}
 			const data = buttons.map(processData)
@@ -72,7 +72,7 @@ const getDrink = async (url, area) => {
 
 			return {
 				price: price,
-				stores: data
+				stores: data,
 			}
 		})
 
@@ -88,7 +88,7 @@ const getDrink = async (url, area) => {
 			return {
 				success: true,
 				price: result.price,
-				stores: filteredStores
+				stores: filteredStores,
 			}
 		} else {
 			console.error('result is null')
