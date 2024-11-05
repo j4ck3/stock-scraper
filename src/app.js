@@ -18,26 +18,43 @@ const sendTelegramNotification = async (message, p0) => {
 	}
 }
 
-const executeJob = async () => {
+async function checkTriggizStatus() {
 	try {
 		const result = await getTriggiz()
 
 		const triggizNumber = result.triggiz.replace(/\D/g, '')
 
 		const notifyPattern = /^(5|[6-9]|[1-9]\d+)?0{3}0$/
-		const triggizValueIsRewardThreshold = notifyPattern.test(
-			triggizNumber.toString()
-		)
+		const triggizValueIsRewardThreshold = notifyPattern.test(triggizNumber)
 
 		const message = `✅ ${result.triggiz}
 🚀 ${result.milestone}
 📌 ${triggizValueIsRewardThreshold}`
 
 		await sendTelegramNotification(message, { parse_mode: 'Html' })
+	} catch (error) {
+		console.error('Error in checkTriggizStatus:', error)
+	}
+}
+
+const executeJob = async () => {
+	try {
+		await checkTriggizStatus()
 	} catch (err) {
 		console.error('Failed to execute job:', err)
 	}
 }
+
+;(async () => {
+	try {
+		if (process.env.NODE_ENV === 'production') {
+			console.log('Running in production mode')
+			await checkTriggizStatus()
+		}
+	} catch (error) {
+		console.error('Error executing job:', error)
+	}
+})()
 
 // Schedule the job to run every day at 20:00
 const job = schedule.scheduleJob('0 20 * * *', async () => {

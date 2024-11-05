@@ -1,4 +1,5 @@
 node_modules/
+chrome/
 .expo/
 dist/
 npm-debug.*

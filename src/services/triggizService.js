@@ -1,14 +1,18 @@
 const puppeteer = require('puppeteer')
+var locateChrome = require('locate-chrome')
 require('dotenv').config()
 
 const getTriggiz = async () => {
 	const isProduction = process.env.NODE_ENV === 'production'
 
+	const executablePath =
+		(await new Promise((resolve) => locateChrome((arg) => resolve(arg)))) ||
+		''
+
 	const browser = await puppeteer.launch({
 		headless: isProduction ? 'new' : false,
-		executablePath: isProduction ? '/usr/bin/chromium-browser' : undefined,
-		// userDataDir: isProduction ? '/home/bolaget-puppeteer/' : undefined,
-		args: isProduction ? ['--no-sandbox'] : [],
+		executablePath: isProduction ? executablePath : undefined,
+		args: isProduction ? ['--no-sandbox', '--disable-setuid-sandbox'] : [],
 	})
 	const page = await browser.newPage()
 
