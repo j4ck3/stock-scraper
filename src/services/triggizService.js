@@ -5,7 +5,7 @@ const getTriggiz = async () => {
 	const isProduction = process.env.NODE_ENV === 'production'
 
 	const browser = await puppeteer.launch({
-		executablePath: isProduction ? '/usr/bin/chromium-browser' : undefined,
+		executablePath: isProduction ? '/usr/bin/chromium' : undefined,
 		headless: isProduction ? 'new' : false,
 		ignoreDefaultArgs: ['--disable-extensions'],
 		args: ['--no-sandbox', '--disable-setuid-sandbox'],

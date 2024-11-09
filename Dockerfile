@@ -2,11 +2,11 @@ FROM node:slim
 
 # Install dependencies and Chromium browser
 RUN apt-get update && \
-    apt-get install -y chromium-browser gnupg unzip && \
+    apt-get install -y chromium gnupg unzip && \
     rm -rf /var/lib/apt/lists/*
 
 # Verify PATH
-RUN which chromium || which chromium-browser
+RUN which chromium
 
 
 # Create a user with name 'app' and group that will be used to run the app
