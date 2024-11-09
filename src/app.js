@@ -9,10 +9,10 @@ const TelegramBot = require('node-telegram-bot-api')
 const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN
 const CHANNELID = process.env.TELEGRAM_CHANNELID
 
-const sendTelegramNotification = async (message, p0) => {
+const sendTelegramNotification = async (message) => {
 	try {
 		const bot = new TelegramBot(BOT_TOKEN)
-		await bot.sendMessage(CHANNELID, message, p0)
+		await bot.sendMessage(CHANNELID, message, { parse_mode: 'Html' })
 	} catch (error) {
 		console.error('Error sending message:', error)
 	}
@@ -31,7 +31,7 @@ async function checkTriggizStatus() {
 🚀 ${result.milestone}
 📌 ${triggizValueIsRewardThreshold}`
 
-		await sendTelegramNotification(message, { parse_mode: 'Html' })
+		await sendTelegramNotification(message)
 	} catch (error) {
 		console.error('Error in checkTriggizStatus:', error)
 	}
