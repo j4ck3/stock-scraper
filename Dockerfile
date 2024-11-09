@@ -2,14 +2,12 @@ FROM node:slim
 
 # Install dependencies and Chromium browser
 RUN apt-get update && \
-    apt-get install -y chromium gnupg unzip && \
+    apt-get install -y chromium-browser gnupg unzip && \
     rm -rf /var/lib/apt/lists/*
 
-# Verify Chromium installation
-RUN chromium --version
-
 # Verify PATH
-RUN which chromium || true
+RUN which chromium || which chromium-browser
+
 
 # Create a user with name 'app' and group that will be used to run the app
 RUN groupadd -r app && useradd -rm -g app -G audio,video app
