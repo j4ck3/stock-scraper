@@ -5,10 +5,9 @@ const getTriggiz = async () => {
 	const isProduction = process.env.NODE_ENV === 'production'
 
 	const executablePath = puppeteer.executablePath()
+	console.log(executablePath)
 
 	const browser = await puppeteer.launch({
-		headless: isProduction ? 'new' : false,
-		executablePath: isProduction ? executablePath : undefined,
 		args: isProduction ? ['--no-sandbox', '--disable-setuid-sandbox'] : [],
 	})
 	const page = await browser.newPage()
