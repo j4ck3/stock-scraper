@@ -1,17 +1,15 @@
-FROM node:20.11.1
+FROM node:slim
 
-# Install the latest Chrome dev package and necessary fonts and libraries
-RUN apt-get update \\
-    && apt-get install -y wget gnupg \\
-    && wget -q -O - <https://dl-ssl.google.com/linux/linux_signing_key.pub> | gpg --dearmor -o /usr/share/keyrings/googlechrome-linux-keyring.gpg \\
-    && echo "deb [arch=amd64 signed-by=/usr/share/keyrings/googlechrome-linux-keyring.gpg] <https://dl-ssl.google.com/linux/chrome/deb/> stable main" > /etc/apt/sources.list.d/google.list \\
-    && apt-get update \\
-    && apt-get install -y google-chrome-stable fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-khmeros fonts-kacst fonts-freefont-ttf libxss1 dbus dbus-x11 \\
-      --no-install-recommends \\
-    && rm -rf /var/lib/apt/lists/* \\
+# Install dependencies and Chromium browser
+RUN apt-get update && \
+    apt-get install -y chromium gnupg unzip && \
+    rm -rf /var/lib/apt/lists/*
 
+# Verify Chromium installation
+RUN chromium --version
 
-RUN which google-chrome-stable || true
+# Verify PATH
+RUN which chromium || true
 
 # Create a user with name 'app' and group that will be used to run the app
 RUN groupadd -r app && useradd -rm -g app -G audio,video app
