@@ -56,8 +56,8 @@ const executeJob = async () => {
 	}
 })()
 
-// Schedule the job to run every day at 20:00
-const job = schedule.scheduleJob('0 20 * * *', async () => {
+// Schedule the job to run every day at 12:00
+const job = schedule.scheduleJob('0 12 * * *', async () => {
 	await executeJob()
 })
 

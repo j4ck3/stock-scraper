@@ -4,12 +4,15 @@ require('dotenv').config()
 const getTriggiz = async () => {
 	const isProduction = process.env.NODE_ENV === 'production'
 
-	const executablePath = puppeteer.executablePath()
-	console.log(executablePath)
-
 	const browser = await puppeteer.launch({
-		args: isProduction ? ['--no-sandbox', '--disable-setuid-sandbox'] : [],
+		executablePath: isProduction
+			? '/usr/bin/google-chrome-stable'
+			: undefined,
+		headless: isProduction ? 'new' : false,
+		ignoreDefaultArgs: ['--disable-extensions'],
+		args: ['--no-sandbox', '--disable-setuid-sandbox'],
 	})
+
 	const page = await browser.newPage()
 
 	try {
