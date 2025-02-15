@@ -26,6 +26,7 @@ async function checkTriggizStatus() {
 
 		const notifyPattern = /^(?:[1-9]\d*)000$/
 		const triggizValueIsRewardThreshold = notifyPattern.test(triggizNumber)
+		console.log(triggizNumber + triggizValueIsRewardThreshold)
 		if (!triggizValueIsRewardThreshold) return
 
 		const message = `✅ ${result.triggiz}
