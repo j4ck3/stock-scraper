@@ -24,8 +24,9 @@ async function checkTriggizStatus() {
 
 		const triggizNumber = result.triggiz.replace(/\D/g, '')
 
-		const notifyPattern = /^(5|[6-9]|[1-9]\d+)?0{3}0$/
+		const notifyPattern = /^(?:[1-9]\d*)000$/
 		const triggizValueIsRewardThreshold = notifyPattern.test(triggizNumber)
+		if (!triggizValueIsRewardThreshold) return
 
 		const message = `✅ ${result.triggiz}
 🚀 ${result.milestone}
